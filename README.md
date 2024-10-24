@@ -1,8 +1,8 @@
 # Shelf
 
 Your personal CLI bookshelf for storing and recalling useful commands.
-
 Shelf allows you to store commands in their respective collections, created by you.
+**No more "I know I used this command last month, but what was it again?" moments**
 
 ## Building from source
 
