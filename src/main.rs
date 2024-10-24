@@ -15,7 +15,8 @@ A lightweight CLI bookshelf for storing and recalling useful commands. No need t
 through shell history for that complex Docker command or git operation - just shelf it and find 
 it when you need it.
 
-No more \"I know I used this command last month, but what was it again?\" moments."
+No more \"I know I used this command last month, but what was it again?\" moments.",
+    arg_required_else_help(true)
 )]
 struct ShelfCli {
     /// Subcommand to run e.g save
