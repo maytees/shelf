@@ -1,7 +1,9 @@
+mod cmd;
 mod config;
 
 use anyhow::{Context, Result};
 use clap::{Parser, Subcommand};
+use cmd::save_command;
 use config::{get_config_dir, get_config_path, load_config};
 
 #[derive(Parser)]
@@ -9,12 +11,11 @@ use config::{get_config_dir, get_config_path, load_config};
     version,
     about = "Shelf - Your personal command-line bookshelf for storing and recalling useful commands",
     long_about = "
-A lightweight command-line bookshelf for storing and recalling useful commands. No need to dig 
+A lightweight CLI bookshelf for storing and recalling useful commands. No need to dig 
 through shell history for that complex Docker command or git operation - just shelf it and find 
-it when you need it. (as long as you shelved it of course)
+it when you need it.
 
-No more \"I know I used this command last month, but what was it again?\" moments. Just shelf 
-it, and find it when you need it."
+No more \"I know I used this command last month, but what was it again?\" moments."
 )]
 struct ShelfCli {
     // /// Optional name to operate on
@@ -29,13 +30,17 @@ struct ShelfCli {
 
 #[derive(Subcommand)]
 enum Commands {
-    // Test {
-    //     /// lists test values
-    //     #[arg(short = "short list", long)]
-    //     list: bool,
-    // },
+    /// Display config information
     Config,
-    // TODO: Save command
+    /// Save a command
+    Save {
+        /// Description of the command (optional)
+        #[arg(short, long, required = false)]
+        description: Option<String>,
+        /// The command to save
+        #[arg(required = true, allow_hyphen_values = true, trailing_var_arg = true)]
+        command: Vec<String>,
+    },
     // TODO: List command
 }
 
@@ -51,6 +56,14 @@ fn main() -> Result<()> {
             println!("{:?} is the config dir", config_dir);
             println!("{:?} is the config path", config_path);
             println!("{:?} is the storage path", config.storage_path);
+        }
+        Some(Commands::Save {
+            description,
+            command,
+        }) => {
+            // Save command
+            let full_command = command.join(" ");
+            let _ = save_command(full_command, description.clone());
         }
         None => {}
     }

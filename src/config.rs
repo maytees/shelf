@@ -30,15 +30,13 @@ pub fn get_data_path() -> PathBuf {
 }
 
 pub fn load_config(config_dir: &PathBuf, config_path: &PathBuf) -> Result<Config> {
-    // Get paths
-
     // Create directories if they don't exist
     fs::create_dir_all(config_dir).context("Could not create `shelf` directory")?;
 
     if !config_path.exists() {
         let default_config = Config::default();
         let toml_string =
-            toml::to_string(&default_config).context("Could not parse toml to string")?;
+            toml::to_string(&default_config).context("Could not serialize toml to string")?;
         fs::write(config_path, toml_string).context("Could not write default config!")?;
         return Ok(default_config);
     }
