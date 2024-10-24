@@ -18,12 +18,7 @@ it when you need it.
 No more \"I know I used this command last month, but what was it again?\" moments."
 )]
 struct ShelfCli {
-    // /// Optional name to operate on
-    // name: Option<String>,
-
-    // /// Sets a custom config file
-    // #[arg(short, long, value_name = "FILE")]
-    // config: Option<PathBuf>,
+    /// Subcommand to run e.g save
     #[command(subcommand)]
     command: Option<Commands>,
 }
@@ -62,8 +57,7 @@ fn main() -> Result<()> {
             command,
         }) => {
             // Save command
-            let full_command = command.join(" ");
-            let _ = save_command(full_command, description.clone());
+            let _ = save_command(command.join(" "), description.clone());
         }
         None => {}
     }
