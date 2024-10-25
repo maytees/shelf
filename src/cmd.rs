@@ -41,7 +41,7 @@ pub fn save_command(command: String, description: Option<String>) -> Result<()> 
 
     shelf_data.commands.push(SavedCommand {
         id: get_next_id(&shelf_data.commands),
-        command,
+        command: command.clone(),
         description: match description {
             Some(desc) => desc,
             None => default_description(),
@@ -52,6 +52,13 @@ pub fn save_command(command: String, description: Option<String>) -> Result<()> 
     let toml_string =
         toml::to_string(&shelf_data).context("Could not serialize data toml to string!")?;
     fs::write(&path, toml_string).context("Could not write command to data file!")?;
+
+    println!(
+        "{} {} {}",
+        "Shelved command:".green(),
+        command.cyan().bold(),
+        "succesfully".green()
+    );
 
     Ok(())
 }
