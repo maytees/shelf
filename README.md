@@ -38,13 +38,13 @@ shelf save -d "Prints out HOME env var" echo $HOME
 ### Listing commands
 
 By default, this will act similar to shell history, and print out saved commands in order.
-Use the `--verbose` flag to display command descriptions *(there will be more info in the future)*
+Use the `--verbose` flag to display the command description *(there will be more info in the future)*
 
 ```bash
 shelf list
 ```
 
-<img width="761" alt="image" src="https://github.com/user-attachments/assets/13ab426c-4541-4a10-a7eb-e6fd7eeeaf2b">
+![image](https://github.com/user-attachments/assets/84e0ccb0-e6cf-455f-ad16-967d5607e7c6)
 
 
 ## Todo
