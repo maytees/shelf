@@ -5,13 +5,41 @@ Shelf allows you to store commands in their respective collections, created by y
 
 **No more _"I know I used this command last month, but what was it again?"_ moments**
 
-## Building from source
+## Installing with Cargo
 
-No package manager **_yet_**...
+View the crates.io page [here](https://crates.io/crates/shelf-cli)
+
+Requirements:
+
+- Cargo/Rust
+
+1. Cargo install
+
+```bash
+cargo install shelf-cli
+```
+
+**The install might give you a warning:**
+
+Be sure to add `/path/to/.cargo/bin` _(it will tell you)_ to your PATH to be able to run the installed binaries.
+
+2. Change alias on shell
+   Because the package name `shelf` is already taken on crates.
+   io, the name for the package is `shelf-cli`. You should
+   set an alias for the package via your shell's _run commands (rc)_:
+
+`.zshrc, .bashrc, etc`
+
+```bash
+alias shelf="shelf-cli"
+```
+
+## Building from source
 
 Requirements:
 
 - Rust
+- Git (ofc)
 
 1. Clone the repo
 
