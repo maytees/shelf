@@ -35,7 +35,17 @@ This will store a command to the global collection.
 shelf save -d "Prints out HOME env var" echo $HOME
 ```
 
-<!-- TODO: List commands -->
+### Listing commands
+
+By default, this will act similar to shell history, and print out saved commands in order.
+Use the `--verbose` flag to display command descriptions *(there will be more info in the future)*
+
+```bash
+shelf list
+```
+
+<img width="761" alt="image" src="https://github.com/user-attachments/assets/13ab426c-4541-4a10-a7eb-e6fd7eeeaf2b">
+
 
 ## Todo
 
@@ -43,8 +53,10 @@ shelf save -d "Prints out HOME env var" echo $HOME
   - [x] Save globally
   - [ ] Save to a collection
   - [ ] Save with tags
-- [ ] List
+- [x] List
   - [ ] List a collection
+  - [x] Reverse flag
+  - [x] Verbose flag
 - [ ] Search
   - [ ] Fuzzy search
   - [ ] Search by tag
