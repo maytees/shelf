@@ -4,7 +4,7 @@ version = "0.0.1"
 authors = ["maytees"]
 edition = "2021"
 description = "Your personal CLI bookshelf for storing and recalling useful commands."
-categories = ["cli", "shell"]
+categories = ["command-line-utilities"]
 license = "MIT"
 repository = "https://github.com/maytees/shelf"
 
