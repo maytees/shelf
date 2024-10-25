@@ -11,3 +11,4 @@ serde = { version = "1.0.210", features = ["derive"] }
 toml = "=0.8.19"
 anyhow = "1.0"
 dirs = "5.0"
+colored = "2"
