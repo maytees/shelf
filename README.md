@@ -38,14 +38,13 @@ shelf save -d "Prints out HOME env var" echo $HOME
 ### Listing commands
 
 By default, this will act similar to shell history, and print out saved commands in order.
-Use the `--verbose` flag to display the command description *(there will be more info in the future)*
+Use the `--verbose` flag to display the command description _(there will be more info in the future)_
 
 ```bash
 shelf list
 ```
 
 ![image](https://github.com/user-attachments/assets/84e0ccb0-e6cf-455f-ad16-967d5607e7c6)
-
 
 ## Todo
 
@@ -57,6 +56,9 @@ shelf list
   - [ ] List a collection
   - [x] Reverse flag
   - [x] Verbose flag
+- [ ] Run commands
+  - [ ] Via search
+  - [ ] Via id (similar to shell history)
 - [ ] Search
   - [ ] Fuzzy search
   - [ ] Search by tag
