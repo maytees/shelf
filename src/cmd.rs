@@ -69,6 +69,11 @@ pub fn list_commands(verbose: &bool, reverse: &bool) -> Result<()> {
         shelf_data.commands.reverse();
     }
 
+    if shelf_data.commands.is_empty() {
+        println!("{}", "You have no saved commands!".red());
+        return Ok(());
+    }
+
     shelf_data.commands.iter().for_each(|cmd| {
         let mut output = format!(
             "{} {} {}",
