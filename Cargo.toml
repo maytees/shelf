@@ -1,5 +1,5 @@
 [package]
-name = "shelf"
+name = "shelf-cli"
 version = "0.0.1"
 authors = ["maytees"]
 edition = "2021"
