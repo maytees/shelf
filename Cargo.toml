@@ -4,6 +4,7 @@ version = "0.0.1"
 edition = "2021"
 description = "Your personal CLI bookshelf for storing and recalling useful commands."
 categories = ["cli", "shell"]
+license = "MIT"
 
 [dependencies]
 clap = { version = "4.5.20", features = ["derive"] }
