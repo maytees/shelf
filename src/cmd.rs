@@ -114,21 +114,25 @@ pub fn list_commands(verbose: &bool, reverse: &bool) -> Result<()> {
     Ok(())
 }
 
+fn save_to_clipboard(cmd: &SavedCommand) -> Result<()> {
+    let mut ctx = ClipboardContext::new().unwrap();
+    ctx.set_contents(cmd.command.clone()).unwrap();
+
+    println!(
+        "{} {} {}",
+        "Saved".green(),
+        cmd.command.cyan().bold(),
+        "to your clipboard.".green()
+    );
+
+    Ok(())
+}
+
 pub fn copy_command(id: &u32) -> Result<()> {
     let shelf_data = get_shelf_data().context("Could not fetch shelf data")?;
-    let mut ctx = ClipboardContext::new().unwrap();
 
     if let Some(cmd) = shelf_data.commands.iter().find(|cmd| cmd.id == *id) {
-        ctx.set_contents(cmd.command.clone()).unwrap();
-
-        println!(
-            "{} {} {}",
-            "Saved".green(),
-            cmd.command.cyan().bold(),
-            "to your clipboard.".green()
-        );
-
-        return Ok(());
+        return save_to_clipboard(cmd);
     }
 
     eprintln!(
@@ -138,38 +142,42 @@ pub fn copy_command(id: &u32) -> Result<()> {
     );
 
     std::process::exit(1)
+}
+
+fn exec_command(command: SavedCommand) -> Result<()> {
+    // First expand any environment variables in the command
+    let expanded_command = shellexpand::full(&command.command)
+        .map_err(|e| anyhow::anyhow!("Failed to expand environment variables: {}", e))?;
+
+    // Split the expanded command string into parts
+    let args: Vec<String> = expanded_command
+        .split_whitespace()
+        .map(|s| s.to_string())
+        .collect();
+
+    if args.is_empty() {
+        return Err(anyhow::anyhow!("Empty command after expansion"));
+    }
+
+    let command = &args[0];
+    let params = &args[1..];
+
+    // Execute the command
+    match Command::new(command).args(params).status() {
+        Ok(status) => {
+            if !status.success() {
+                eprintln!("Command failed with status: {}", status);
+            }
+        }
+        Err(e) => eprintln!("Failed to execute command: {}, {:?}", e, args),
+    }
+    return Ok(());
 }
 
 pub fn run_command(id: &u32) -> Result<()> {
     let shelf_data = get_shelf_data().context("Could not fetch shelf data")?;
     if let Some(cmd) = shelf_data.commands.iter().find(|cmd| cmd.id == *id) {
-        // First expand any environment variables in the command
-        let expanded_command = shellexpand::full(&cmd.command)
-            .map_err(|e| anyhow::anyhow!("Failed to expand environment variables: {}", e))?;
-
-        // Split the expanded command string into parts
-        let args: Vec<String> = expanded_command
-            .split_whitespace()
-            .map(|s| s.to_string())
-            .collect();
-
-        if args.is_empty() {
-            return Err(anyhow::anyhow!("Empty command after expansion"));
-        }
-
-        let command = &args[0];
-        let params = &args[1..];
-
-        // Execute the command
-        match Command::new(command).args(params).status() {
-            Ok(status) => {
-                if !status.success() {
-                    eprintln!("Command failed with status: {}", status);
-                }
-            }
-            Err(e) => eprintln!("Failed to execute command: {}, {:?}", e, args),
-        }
-        return Ok(());
+        return exec_command(cmd.clone());
     }
     eprintln!(
         "{}{}",
@@ -179,17 +187,17 @@ pub fn run_command(id: &u32) -> Result<()> {
     std::process::exit(1)
 }
 
-pub fn fuzzy_search(_: &bool) -> Result<()> {
+pub fn fuzzy_search(copy: &bool) -> Result<()> {
     let shelf_data = get_shelf_data().context("Could not fetch shelf data")?;
 
     let mut picker = FuzzyPicker::new(&shelf_data.commands);
 
     if let Ok(Some(selected)) = picker.pick() {
-        println!(
-            "{}{}",
-            "Selected command: ".green(),
-            selected.command.cyan().bold()
-        );
+        if *copy {
+            return save_to_clipboard(&selected);
+        }
+
+        return exec_command(selected);
     } else {
         println!("{}", "No saved command selected...".red().bold());
     }

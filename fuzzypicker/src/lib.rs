@@ -7,6 +7,7 @@
 //! - Fuzzy searching of items based on user input.
 //! - Interactive selection with keyboard and mouse support.
 //! - Designed for integration into Rust-based command-line tools.
+//! - Preserves scroll position when exiting the fuzzy finder view.
 //!
 //! ## Example
 //!
@@ -58,6 +59,7 @@ pub struct FuzzyPicker<T: Display + Clone> {
     start_index: usize,
     end_index: usize,
     height: usize,
+    initial_cursor_position: (u16, u16),
 }
 
 impl<T: Display + Clone> FuzzyPicker<T> {
@@ -88,6 +90,7 @@ impl<T: Display + Clone> FuzzyPicker<T> {
             start_index: 0,
             end_index: num_of_displayable_items.saturating_sub(1),
             height: h as usize,
+            initial_cursor_position: (0, 0),
         }
     }
 
@@ -148,6 +151,7 @@ impl<T: Display + Clone> FuzzyPicker<T> {
 
         // Set up terminal
         terminal::enable_raw_mode()?;
+        self.initial_cursor_position = crossterm::cursor::position()?;
         self.stdout
             .queue(EnterAlternateScreen)?
             .queue(EnableMouseCapture)?
@@ -257,14 +261,13 @@ impl<T: Display + Clone> FuzzyPicker<T> {
             .queue(Clear(ClearType::All))?
             .queue(LeaveAlternateScreen)?
             .queue(DisableMouseCapture)?
-            .queue(MoveTo(0, 0))?
+            .queue(MoveTo(
+                self.initial_cursor_position.0,
+                self.initial_cursor_position.1,
+            ))?
             .flush()?;
 
         terminal::disable_raw_mode()?;
-
-        // Clear the current line to prevent overlapping
-        print!("\r\x1b[K");
-        stdout().flush()?;
 
         Ok(())
     }
