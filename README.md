@@ -94,6 +94,22 @@ so it's there for you to use.. :)
 shelf run -c <ID>
 ```
 
+### Fuzzy searching
+
+You are able to fuzzy search commands to either run them or copy them.
+
+#### Run via fuzzy search
+
+```bash
+shelf fuzz
+```
+
+#### Copying to clipbaord via fuzzy search
+
+```bash
+shelf fuzz -c
+```
+
 ![image](https://github.com/user-attachments/assets/84e0ccb0-e6cf-455f-ad16-967d5607e7c6)
 
 ## Todo
