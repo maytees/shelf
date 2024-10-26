@@ -1,6 +1,6 @@
 > [!NOTE]
 > This is a forked version of `https://github.com/galib45/fuzzypicker`.
-> I do not own this code
+> I do not own this code. I just modified it and applied some fixes
 
 # Fuzzypicker
 
