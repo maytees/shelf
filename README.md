@@ -114,20 +114,23 @@ shelf fuzz -c
 
 ## Todo
 
-- [ ] Save
+- [x] Save
   - [x] Save globally
   - [ ] Save to a collection
-  - [ ] Save with tags
+  - [x] Save with tags
 - [x] List
   - [ ] List a collection
   - [x] Reverse flag
   - [x] Verbose flag
+    - [x] Description
+    - [ ] Tags
+    - [ ] Collection
 - [ ] Run commands
   - [ ] Via search
   - [x] Via id (similar to shell history)
   - [x] Copy command via flag
 - [ ] Search
-  - [ ] Fuzzy search
+  - [x] Fuzzy search
   - [ ] Search by tag
   - [ ] Search a collection by tag
 - [ ] Shell history integration
