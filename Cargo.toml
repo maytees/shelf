@@ -1,6 +1,6 @@
 [package]
 name = "shelf-cli"
-version = "0.0.3"
+version = "0.0.31"
 authors = ["maytees"]
 edition = "2021"
 description = "Your personal CLI bookshelf for storing and recalling useful commands."
