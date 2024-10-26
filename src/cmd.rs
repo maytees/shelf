@@ -1,7 +1,8 @@
-use std::{fs, process::Command};
+use std::{fmt::Display, fs, process::Command};
 
 use anyhow::{Context, Error, Result};
 use copypasta::{ClipboardContext, ClipboardProvider};
+use fuzzypicker::FuzzyPicker;
 use serde::{Deserialize, Serialize};
 use shellexpand;
 
@@ -9,7 +10,7 @@ use crate::config::get_data_path;
 extern crate colored; // not needed in Rust 2018+
 use colored::*;
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Clone, Debug)]
 pub struct SavedCommand {
     pub id: u32,
     pub command: String,
@@ -18,7 +19,21 @@ pub struct SavedCommand {
     pub description: String,
 }
 
-#[derive(Serialize, Deserialize)]
+impl Display for SavedCommand {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(
+            f,
+            "{} {} {} {} {}",
+            self.id.to_string().yellow(),
+            "-".to_string().yellow(),
+            self.command.red().bold(),
+            "--".to_string().yellow(),
+            self.description.yellow()
+        )
+    }
+}
+
+#[derive(Serialize, Deserialize, Clone)]
 pub struct ShelfData {
     commands: Vec<SavedCommand>,
 }
@@ -162,4 +177,22 @@ pub fn run_command(id: &u32) -> Result<()> {
         id.to_string().yellow().bold()
     );
     std::process::exit(1)
+}
+
+pub fn fuzzy_search(_: &bool) -> Result<()> {
+    let shelf_data = get_shelf_data().context("Could not fetch shelf data")?;
+
+    let mut picker = FuzzyPicker::new(&shelf_data.commands);
+
+    if let Ok(Some(selected)) = picker.pick() {
+        println!(
+            "{}{}",
+            "Selected command: ".green(),
+            selected.command.cyan().bold()
+        );
+    } else {
+        println!("{}", "No saved command selected...".red().bold());
+    }
+
+    Ok(())
 }

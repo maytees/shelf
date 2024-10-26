@@ -3,7 +3,7 @@ mod config;
 
 use anyhow::{Context, Result};
 use clap::{Parser, Subcommand};
-use cmd::{copy_command, list_commands, run_command, save_command};
+use cmd::{copy_command, fuzzy_search, list_commands, run_command, save_command};
 use config::{get_config_dir, get_config_path, load_config};
 
 #[derive(Parser)]
@@ -50,6 +50,12 @@ enum Commands {
         copy: bool,
         id: u32,
     },
+    /// Fuzzy search your commands
+    #[command(alias = "fuzzy")]
+    Fuzz {
+        #[arg(short, long, required = false)]
+        copy: bool,
+    },
 }
 
 fn main() -> Result<()> {
@@ -80,6 +86,7 @@ fn main() -> Result<()> {
             // Run command
             return run_command(id);
         }
+        Some(Commands::Fuzz { copy }) => return fuzzy_search(copy),
         None => {}
     }
 
