@@ -104,8 +104,14 @@ pub fn list_commands(verbose: &bool, reverse: &bool) -> Result<()> {
         );
 
         if *verbose {
-            output
-                .push_str(format!(" {} {}", "--".bright_yellow().bold(), cmd.description).as_str());
+            output.push_str(
+                format!(
+                    " {} {}",
+                    "--".bright_yellow().bold(),
+                    cmd.description.yellow()
+                )
+                .as_str(),
+            );
         }
 
         println!("{}", output);
