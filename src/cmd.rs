@@ -24,16 +24,26 @@ fn default_description() -> String {
     "No description.".to_string()
 }
 
+// Used to display da' fuzz
 impl Display for SavedCommand {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        let mut tagout = String::new();
+
+        if let Some(tags) = &self.tags {
+            tagout.push_str(
+                format!(" {} {}", "-- Tags:".red().bold(), tags.join(", ").red()).as_str(),
+            );
+        }
+
         write!(
             f,
-            "{} {} {} {} {}",
+            "{} {} {} {} {}{}",
             self.id.to_string().yellow(),
             "-".to_string().yellow(),
             self.command.red().bold(),
             "--".to_string().yellow(),
-            self.description.yellow()
+            self.description.yellow(),
+            tagout
         )
     }
 }
