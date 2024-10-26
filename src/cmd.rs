@@ -2,11 +2,10 @@ use std::{fmt::Display, fs, process::Command};
 
 use anyhow::{Context, Error, Result};
 use copypasta::{ClipboardContext, ClipboardProvider};
-use fuzzypicker::FuzzyPicker;
 use serde::{Deserialize, Serialize};
 use shellexpand;
 
-use crate::config::get_data_path;
+use crate::{config::get_data_path, fuzzy::FuzzyPicker};
 extern crate colored; // not needed in Rust 2018+
 use colored::*;
 
