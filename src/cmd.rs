@@ -16,6 +16,12 @@ pub struct SavedCommand {
 
     #[serde(default = "default_description")]
     pub description: String,
+
+    pub tags: Option<Vec<String>>,
+}
+
+fn default_description() -> String {
+    "No description.".to_string()
 }
 
 impl Display for SavedCommand {
@@ -37,10 +43,6 @@ pub struct ShelfData {
     commands: Vec<SavedCommand>,
 }
 
-fn default_description() -> String {
-    "No description.".to_string()
-}
-
 fn get_next_id(commands: &Vec<SavedCommand>) -> u32 {
     commands.iter().map(|cmd| cmd.id).max().unwrap_or(0) + 1
 }
@@ -55,7 +57,11 @@ fn get_shelf_data() -> Result<ShelfData, Error> {
     Ok(ShelfData { commands: vec![] })
 }
 
-pub fn save_command(command: String, description: Option<String>) -> Result<()> {
+pub fn save_command(
+    command: String,
+    description: Option<String>,
+    tags: Option<Vec<String>>,
+) -> Result<()> {
     // Get file
     let mut shelf_data = get_shelf_data().context("Could not fetch shelf data")?;
 
@@ -66,6 +72,7 @@ pub fn save_command(command: String, description: Option<String>) -> Result<()> 
             Some(desc) => desc,
             None => default_description(),
         },
+        tags,
     });
 
     // Serialize data (save the command)
@@ -75,7 +82,7 @@ pub fn save_command(command: String, description: Option<String>) -> Result<()> 
 
     println!(
         "{} {} {}",
-        "Shelved command: ".green(),
+        "Shelved command:".green(),
         command.cyan().bold(),
         "succesfully".green()
     );

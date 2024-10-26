@@ -27,13 +27,19 @@ struct ShelfCli {
 
 #[derive(Subcommand)]
 enum Commands {
-    /// Display config information
+    /// Display config information/paths
     Config,
+    // TODO: Change save to stack, but keep save as an alias
     /// Save a command
     Save {
         /// Description of the command (optional)
         #[arg(short, long, required = false)]
         description: Option<String>,
+
+        /// Comma seperated tags, no spaces in between
+        #[arg(short, long, allow_hyphen_values = true)]
+        tags: Option<String>,
+
         /// The command to save
         #[arg(required = true, allow_hyphen_values = true, trailing_var_arg = true)]
         command: Vec<String>,
@@ -75,7 +81,16 @@ fn main() -> Result<()> {
         Some(Commands::Save {
             description,
             command,
-        }) => save_command(command.join(" "), description.clone())?,
+            tags,
+        }) => save_command(
+            command.join(" "),
+            description.clone(),
+            if let Some(tags) = tags {
+                Some(tags.split(",").map(|s| s.to_string()).collect())
+            } else {
+                None
+            },
+        )?,
         Some(Commands::List { verbose, reverse }) => {
             list_commands(verbose, reverse)?;
         }
