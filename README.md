@@ -72,6 +72,37 @@ Use the `--verbose` flag to display the command description _(there will be more
 shelf list
 ```
 
+### Running a command
+
+> [!TIP]
+> If a command is saved with an environment variable, the variable\_
+> variable will be evaluated when you run the command. If you wish to
+> evaluate the variable when you save the command, use your shell's
+> method of entering variables as plain strings. For example in zsh
+> you add a `\` before the variable: `\$HOME`.
+
+Currently, there are two ways to _fetch_ commands in shelf:
+
+1. Running
+2. Copying to clipboard
+
+#### Running
+
+To run a command, first find the `id` of the command via `shelf list`
+
+```bash
+shelf run <ID>
+```
+
+#### Copying to clipboard
+
+Copying to clipboard may not seem all that useful right now, but it may come in handy someday,
+so it's there for you to use.. :)
+
+```bash
+shelf run -c <ID>
+```
+
 ![image](https://github.com/user-attachments/assets/84e0ccb0-e6cf-455f-ad16-967d5607e7c6)
 
 ## Todo
@@ -86,7 +117,8 @@ shelf list
   - [x] Verbose flag
 - [ ] Run commands
   - [ ] Via search
-  - [ ] Via id (similar to shell history)
+  - [x] Via id (similar to shell history)
+  - [x] Copy command via flag
 - [ ] Search
   - [ ] Fuzzy search
   - [ ] Search by tag
