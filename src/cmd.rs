@@ -107,18 +107,29 @@ pub fn list_commands(verbose: &bool, reverse: &bool) -> Result<()> {
             "{} {} {}",
             cmd.id.to_string().yellow().bold(),
             "-".bright_yellow().bold(),
-            cmd.command.bright_magenta().bold(),
+            cmd.command.bright_cyan().bold(),
         );
 
         if *verbose {
             output.push_str(
                 format!(
-                    " {} {}",
-                    "--".bright_yellow().bold(),
+                    "\n  {} {}",
+                    "-- Desc: ".yellow().bold(),
                     cmd.description.yellow()
                 )
                 .as_str(),
             );
+
+            if let Some(tags) = &cmd.tags {
+                output.push_str(
+                    format!(
+                        "\n  {} {}",
+                        "-- Tags: ".yellow().bold(),
+                        tags.join(", ").yellow()
+                    )
+                    .as_str(),
+                );
+            }
         }
 
         println!("{}", output);
