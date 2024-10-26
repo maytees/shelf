@@ -3,7 +3,7 @@ mod config;
 
 use anyhow::{Context, Result};
 use clap::{Parser, Subcommand};
-use cmd::{list_commands, save_command};
+use cmd::{copy_command, list_commands, run_command, save_command};
 use config::{get_config_dir, get_config_path, load_config};
 
 #[derive(Parser)]
@@ -37,11 +37,18 @@ enum Commands {
         #[arg(required = true, allow_hyphen_values = true, trailing_var_arg = true)]
         command: Vec<String>,
     },
+    /// List saved commands
     List {
         #[arg(short, long, required = false)]
         verbose: bool,
         #[arg(short, long, required = false)]
         reverse: bool,
+    },
+    /// Run a command via an id
+    Run {
+        #[arg(short, long, required = false)]
+        copy: bool,
+        id: u32,
     },
 }
 
@@ -64,6 +71,14 @@ fn main() -> Result<()> {
         }) => save_command(command.join(" "), description.clone())?,
         Some(Commands::List { verbose, reverse }) => {
             list_commands(verbose, reverse)?;
+        }
+        Some(Commands::Run { id, copy }) => {
+            if *copy {
+                return copy_command(id);
+            }
+
+            // Run command
+            return run_command(id);
         }
         None => {}
     }
