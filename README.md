@@ -56,17 +56,29 @@ shelf save -d "Prints out HOME env var" echo $HOME
 
 To save a command with tags, specifiy with the -t flag.
 
-````bash
+```bash
 shelf save -d "Builds a NextJS Project" -t nextjs,npx,npm npx next build
 ```
+
 ### Listing commands
 
 By default, this will act similar to shell history, and print out saved commands in order.
-Use the `--verbose` flag to display the command description _(there will be more info in the future)_
+Use the `--verbose` flag to display the _command_ description, and _tags_
+in addition to just the id and command
 
 ```bash
 shelf list
-````
+```
+
+#### Options
+
+```
+-v, --verbose        In addition to ID, and command, display tags, and description
+
+-r, --reverse        Reverse the order of the listed commands
+
+-l, --limit <LIMIT>  Limit the order of the listed commands
+```
 
 ### Running a command
 
@@ -126,9 +138,10 @@ shelf fuzz -c
 - [x] List
   - [ ] List a collection
   - [x] Reverse flag
+  - [x] Limit flag
   - [x] Verbose flag
     - [x] Description
-    - [ ] Tags
+    - [x] Tags
     - [ ] Collection
 - [ ] Run commands
   - [ ] Via search

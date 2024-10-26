@@ -27,7 +27,8 @@ struct ShelfCli {
 
 #[derive(Subcommand)]
 enum Commands {
-    /// Display config information/paths
+    /// Display config information/paths. In case you need to find
+    /// your config folder.
     Config,
     // TODO: Change save to stack, but keep save as an alias
     /// Save a command
@@ -46,10 +47,15 @@ enum Commands {
     },
     /// List saved commands
     List {
+        /// In addition to ID, and command, display tags, and description
         #[arg(short, long, required = false)]
         verbose: bool,
+        /// Reverse the order of the listed commands
         #[arg(short, long, required = false)]
         reverse: bool,
+        /// Limit the order of the listed commands.
+        #[arg(short, long)]
+        limit: Option<u32>,
     },
     /// Run a command via an id
     Run {
@@ -60,6 +66,7 @@ enum Commands {
     /// Fuzzy search your commands
     #[command(alias = "fuzzy")]
     Fuzz {
+        /// Copy a selected command rather than run
         #[arg(short, long, required = false)]
         copy: bool,
     },
@@ -91,8 +98,12 @@ fn main() -> Result<()> {
                 None
             },
         )?,
-        Some(Commands::List { verbose, reverse }) => {
-            list_commands(verbose, reverse)?;
+        Some(Commands::List {
+            verbose,
+            reverse,
+            limit,
+        }) => {
+            list_commands(verbose, reverse, limit)?;
         }
         Some(Commands::Run { id, copy }) => {
             if *copy {

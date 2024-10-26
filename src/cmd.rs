@@ -90,11 +90,15 @@ pub fn save_command(
     Ok(())
 }
 
-pub fn list_commands(verbose: &bool, reverse: &bool) -> Result<()> {
+pub fn list_commands(verbose: &bool, reverse: &bool, limit: &Option<u32>) -> Result<()> {
     let mut shelf_data = get_shelf_data().context("Could not fetch shelf data")?;
 
     if *reverse {
         shelf_data.commands.reverse();
+    }
+
+    if let Some(limit) = limit {
+        shelf_data.commands.truncate(*limit as usize);
     }
 
     if shelf_data.commands.is_empty() {
