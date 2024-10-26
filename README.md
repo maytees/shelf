@@ -54,6 +54,11 @@ This will store a command to the global collection.
 shelf save -d "Prints out HOME env var" echo $HOME
 ```
 
+To save a command with tags, specifiy with the -t flag.
+
+````bash
+shelf save -d "Builds a NextJS Project" -t nextjs,npx,npm npx next build
+```
 ### Listing commands
 
 By default, this will act similar to shell history, and print out saved commands in order.
@@ -61,7 +66,7 @@ Use the `--verbose` flag to display the command description _(there will be more
 
 ```bash
 shelf list
-```
+````
 
 ### Running a command
 
