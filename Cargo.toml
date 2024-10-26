@@ -21,5 +21,5 @@ dirs = "5.0"
 colored = "2"
 copypasta = "0.10.1"
 shellexpand = "3.1.0"
-fuzzypicker = { path = "./fuzzypicker" }
+fuzzypicker = { path = "./fuzzypicker", version = "*" }
 crossterm = "0.28.1"
