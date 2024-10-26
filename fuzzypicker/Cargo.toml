@@ -1,0 +1,16 @@
+[package]
+name = "fuzzypicker"
+version = "0.2.1"
+edition = "2021"
+description = "A Rust library for fuzzy searching and interactive selection of items in command-line applications."
+license = "MIT"
+repository = "https://github.com/galib45/fuzzypicker"
+homepage = "https://lib.rs/fuzzypicker"
+documentation = "https://docs.rs/fuzzypicker"
+readme = "README.md"
+keywords = ["text", "search", "fuzzy", "command-line", "match"]
+categories = ["command-line-interface"]
+
+[dependencies]
+crossterm = "0.28.1"
+fuzzy-matcher = "0.3.7"
