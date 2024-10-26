@@ -51,13 +51,13 @@ cargo build
 This will store a command to the global collection.
 
 ```bash
-shelf save -d "Prints out HOME env var" echo $HOME
+shelf stack -d "Prints out HOME env var" echo $HOME
 ```
 
-To save a command with tags, specifiy with the -t flag.
+To stack a command with tags, specifiy with the -t flag.
 
 ```bash
-shelf save -d "Builds a NextJS Project" -t nextjs,npx,npm npx next build
+shelf stack -d "Builds a NextJS Project" -t nextjs,npx,npm npx next build
 ```
 
 ### Listing commands
@@ -85,7 +85,7 @@ shelf list
 > [!TIP]
 > If a command is saved with an environment variable, the variable\_
 > variable will be evaluated when you run the command. If you wish to
-> evaluate the variable when you save the command, use your shell's
+> evaluate the variable when you stack the command, use your shell's
 > method of entering variables as plain strings. For example in zsh
 > you add a `\` before the variable: `\$HOME`.
 
@@ -132,9 +132,9 @@ shelf fuzz -c
 ## Todo
 
 - [x] Save
-  - [x] Save globally
-  - [ ] Save to a collection
-  - [x] Save with tags
+  - [x] Stack globally
+  - [ ] Stack to a collection
+  - [x] Stack with tags
 - [x] List
   - [ ] List a collection
   - [x] Reverse flag

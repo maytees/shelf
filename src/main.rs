@@ -30,9 +30,9 @@ enum Commands {
     /// Display config information/paths. In case you need to find
     /// your config folder.
     Config,
-    // TODO: Change save to stack, but keep save as an alias
     /// Save a command
-    Save {
+    #[command(alias = "save")]
+    Stack {
         /// Description of the command (optional)
         #[arg(short, long, required = false)]
         description: Option<String>,
@@ -85,7 +85,7 @@ fn main() -> Result<()> {
             println!("{:?} is the config path", config_path);
             println!("{:?} is the storage path", config.storage_path);
         }
-        Some(Commands::Save {
+        Some(Commands::Stack {
             description,
             command,
             tags,
