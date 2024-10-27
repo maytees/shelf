@@ -83,7 +83,7 @@ shelf list
 ### Running a command
 
 > [!TIP]
-> If a command is saved with an environment variable, the variable\_
+> If a command is saved with an environment variable, the
 > variable will be evaluated when you run the command. If you wish to
 > evaluate the variable when you stack the command, use your shell's
 > method of entering variables as plain strings. For example in zsh
