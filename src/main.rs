@@ -103,7 +103,11 @@ fn main() -> Result<()> {
             reverse,
             limit,
         }) => {
-            list_commands(verbose, reverse, limit)?;
+            list_commands(
+                &(config.auto_verbose.unwrap_or(false) || *verbose),
+                reverse,
+                limit,
+            )?;
         }
         Some(Commands::Run { id, copy }) => {
             if *copy {

@@ -129,6 +129,18 @@ shelf fuzz -c
 
 ![image](https://github.com/user-attachments/assets/84e0ccb0-e6cf-455f-ad16-967d5607e7c6)
 
+## Config
+
+The configuration for shelf is currently very limited. Here is what is configurable at the moment:
+
+### Auto Verbose
+
+Automatically outputs verbose list of commands **(default: false)**
+
+```toml
+auto_verbose = false
+```
+
 ## Todo
 
 - [x] Save

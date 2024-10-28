@@ -7,12 +7,14 @@ use serde::{Deserialize, Serialize};
 #[derive(Serialize, Deserialize)]
 pub struct Config {
     pub storage_path: String,
+    pub auto_verbose: Option<bool>,
 }
 
 impl Default for Config {
     fn default() -> Self {
         Self {
             storage_path: get_data_path().display().to_string(),
+            auto_verbose: Some(false),
         }
     }
 }
