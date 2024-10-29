@@ -155,8 +155,8 @@ auto_verbose = false
     - [x] Description
     - [x] Tags
     - [ ] Collection
-- [ ] Run commands
-  - [ ] Via search
+- [x] Run commands
+  - [x] Via search
   - [x] Via id (similar to shell history)
   - [x] Copy command via flag
 - [ ] Search
