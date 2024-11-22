@@ -166,4 +166,7 @@ auto_verbose = false
 - [ ] Shell history integration
   - (note: in the short term, this can be achieved with something akin to `shelf stack -d "command" $(history $NUMBER_TO_STORE_IF_APPLICABLE | tail -n 1 | awk '{for (i=2; i<NF; i++) printf $i " "; print $NF}')`)
 - [ ] Colored output (for readability)
+- [ ] Run Command on store
+  - [ ] Save command output
+    - [ ] Store x lines of output
 - [ ] Much more...
