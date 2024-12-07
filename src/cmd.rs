@@ -1,9 +1,8 @@
-use std::{fmt::Display, fs, process::Command};
-
 use anyhow::{Context, Error, Result};
 use copypasta::{ClipboardContext, ClipboardProvider};
 use serde::{Deserialize, Serialize};
 use shellexpand;
+use std::{fmt::Display, fs, process::Command};
 
 use crate::{config::get_data_path, fuzzy::FuzzyPicker};
 extern crate colored; // not needed in Rust 2018+

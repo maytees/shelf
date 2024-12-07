@@ -1,11 +1,11 @@
 mod cmd;
 mod config;
+mod fuzzy;
 
 use anyhow::{Context, Result};
 use clap::{Parser, Subcommand};
 use cmd::{copy_command, fuzzy_search, list_commands, run_command, save_command};
 use config::{get_config_dir, get_config_path, load_config};
-mod fuzzy;
 
 #[derive(Parser)]
 #[command(
