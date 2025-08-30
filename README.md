@@ -111,6 +111,44 @@ so it's there for you to use.. :)
 shelf run -c <ID>
 ```
 
+### Deleting commands
+
+Remove a saved command permanently:
+
+```bash
+shelf delete <ID>
+```
+
+### Editing commands
+
+#### Managing tags
+
+Add a tag to an existing command:
+
+```bash
+shelf addtag <ID> <TAG>
+```
+
+Remove a tag from a command:
+
+```bash
+shelf rmtag <ID> <TAG>
+```
+
+#### Editing descriptions and commands
+
+Update the description of a saved command:
+
+```bash
+shelf editdesc <ID> "New description here"
+```
+
+Edit the command string itself:
+
+```bash
+shelf editcommand <ID> new command here
+```
+
 ### Fuzzy searching
 
 You are able to fuzzy search commands to either run them or copy them.
@@ -159,13 +197,19 @@ auto_verbose = false
   - [x] Via search
   - [x] Via id (similar to shell history)
   - [x] Copy command via flag
+- [x] Edit commands
+  - [x] Delete commands
+  - [x] Add tags to existing commands
+  - [x] Remove tags from commands
+  - [x] Edit command descriptions
+  - [x] Edit command strings
 - [ ] Search
   - [x] Fuzzy search
   - [ ] Search by tag
   - [ ] Search a collection by tag
 - [ ] Shell history integration
-  - (note: in the short term, this can be achieved with something akin to `shelf stack -d "command" $(history $NUMBER_TO_STORE_IF_APPLICABLE | tail -n 1 | awk '{for (i=2; i<NF; i++) printf $i " "; print $NF}')`)
-- [ ] Colored output (for readability)
+  <!--- (note: in the short term, this can be achieved with something akin to `shelf stack -d "command" $(history $NUMBER_TO_STORE_IF_APPLICABLE | tail -n 1 | awk '{for (i=2; i<NF; i++) printf $i " "; print $NF}')`)-->
+- [x] Colored output (for readability)
 - [ ] Run Command on store
   - [ ] Save command output
     - [ ] Store x lines of output
