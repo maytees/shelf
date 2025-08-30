@@ -4,7 +4,7 @@ mod fuzzy;
 
 use anyhow::{Context, Result};
 use clap::{Parser, Subcommand};
-use cmd::{copy_command, fuzzy_search, list_commands, run_command, save_command};
+use cmd::{copy_command, delete_command, fuzzy_search, list_commands, run_command, save_command};
 use config::{get_config_dir, get_config_path, load_config};
 
 #[derive(Parser)]
@@ -70,6 +70,10 @@ enum Commands {
         #[arg(short, long, required = false)]
         copy: bool,
     },
+    /// Delete a saved command by ID
+    Delete {
+        id: u32,
+    },
 }
 
 fn main() -> Result<()> {
@@ -118,6 +122,9 @@ fn main() -> Result<()> {
             return run_command(id);
         }
         Some(Commands::Fuzz { copy }) => return fuzzy_search(copy),
+        Some(Commands::Delete { id }) => {
+            delete_command(id)?;
+        }
         None => {}
     }
 

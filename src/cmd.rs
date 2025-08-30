@@ -124,14 +124,16 @@ pub fn list_commands(verbose: &bool, reverse: &bool, limit: &Option<u32>) -> Res
         );
 
         if *verbose {
-            output.push_str(
-                format!(
-                    "\n  {} {}",
-                    "-- Desc: ".yellow().bold(),
-                    cmd.description.yellow()
-                )
-                .as_str(),
-            );
+            if cmd.description != "No description." {
+                output.push_str(
+                    format!(
+                        "\n  {} {}",
+                        "-- Desc: ".yellow().bold(),
+                        cmd.description.yellow()
+                    )
+                    .as_str(),
+                );
+            }
 
             if let Some(tags) = &cmd.tags {
                 output.push_str(
@@ -237,6 +239,35 @@ pub fn fuzzy_search(copy: &bool) -> Result<()> {
     } else {
         println!("{}", "No saved command selected...".red().bold());
     }
+
+    Ok(())
+}
+
+pub fn delete_command(id: &u32) -> Result<()> {
+    let mut shelf_data = get_shelf_data().context("Could not fetch shelf data")?;
+
+    let initial_len = shelf_data.commands.len();
+    shelf_data.commands.retain(|cmd| cmd.id != *id);
+
+    if shelf_data.commands.len() == initial_len {
+        eprintln!(
+            "{}{}",
+            "Could not find saved command with id: ".red(),
+            id.to_string().yellow().bold()
+        );
+        std::process::exit(1);
+    }
+
+    let toml_string =
+        toml::to_string(&shelf_data).context("Could not serialize data toml to string!")?;
+    fs::write(&get_data_path(), toml_string).context("Could not write updated data to file!")?;
+
+    println!(
+        "{} {} {}",
+        "Deleted command with id:".green(),
+        id.to_string().yellow().bold(),
+        "successfully".green()
+    );
 
     Ok(())
 }
