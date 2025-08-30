@@ -4,7 +4,10 @@ mod fuzzy;
 
 use anyhow::{Context, Result};
 use clap::{Parser, Subcommand};
-use cmd::{copy_command, delete_command, fuzzy_search, list_commands, run_command, save_command};
+use cmd::{
+    add_tag, copy_command, delete_command, edit_command_string, edit_description, fuzzy_search,
+    list_commands, remove_tag, run_command, save_command,
+};
 use config::{get_config_dir, get_config_path, load_config};
 
 #[derive(Parser)]
@@ -12,8 +15,8 @@ use config::{get_config_dir, get_config_path, load_config};
     version,
     about = "Shelf - Your personal command-line bookshelf for storing and recalling useful commands",
     long_about = "
-A lightweight CLI bookshelf for storing and recalling useful commands. No need to dig 
-through shell history for that complex Docker command or git operation - just shelf it and find 
+A lightweight CLI bookshelf for storing and recalling useful commands. No need to dig
+through shell history for that complex Docker command or git operation - just shelf it and find
 it when you need it.
 
 No more \"I know I used this command last month, but what was it again?\" moments.",
@@ -71,8 +74,21 @@ enum Commands {
         copy: bool,
     },
     /// Delete a saved command by ID
-    Delete {
+    #[command(name = "delete", alias = "del")]
+    Delete { id: u32 },
+    /// Remove a tag from a saved command
+    Rmtag { id: u32, tag: String },
+    /// Add a tag to a saved command
+    Addtag { id: u32, tag: String },
+    /// Edit the description of a saved command
+    #[command(name = "editdesc", alias = "edesc")]
+    EditDesc { id: u32, description: String },
+    /// Edit the command string of a saved command
+    #[command(name = "editcommand", alias = "ecmd")]
+    EditCommand {
         id: u32,
+        #[arg(required = true, allow_hyphen_values = true, trailing_var_arg = true)]
+        command: Vec<String>,
     },
 }
 
@@ -124,6 +140,18 @@ fn main() -> Result<()> {
         Some(Commands::Fuzz { copy }) => return fuzzy_search(copy),
         Some(Commands::Delete { id }) => {
             delete_command(id)?;
+        }
+        Some(Commands::Rmtag { id, tag }) => {
+            remove_tag(id, tag)?;
+        }
+        Some(Commands::Addtag { id, tag }) => {
+            add_tag(id, tag)?;
+        }
+        Some(Commands::EditDesc { id, description }) => {
+            edit_description(id, description)?;
+        }
+        Some(Commands::EditCommand { id, command }) => {
+            edit_command_string(id, &command.join(" "))?;
         }
         None => {}
     }

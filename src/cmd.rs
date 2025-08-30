@@ -271,3 +271,167 @@ pub fn delete_command(id: &u32) -> Result<()> {
 
     Ok(())
 }
+
+pub fn remove_tag(id: &u32, tag: &String) -> Result<()> {
+    let mut shelf_data = get_shelf_data().context("Could not fetch shelf data")?;
+
+    if let Some(cmd) = shelf_data.commands.iter_mut().find(|cmd| cmd.id == *id) {
+        if let Some(tags) = &mut cmd.tags {
+            let initial_len = tags.len();
+            tags.retain(|t| t != tag);
+
+            if tags.len() == initial_len {
+                eprintln!(
+                    "{}{} {} {}",
+                    "Tag ".red(),
+                    tag.yellow().bold(),
+                    "not found in command with id:".red(),
+                    id.to_string().yellow().bold()
+                );
+                std::process::exit(1);
+            }
+
+            if tags.is_empty() {
+                cmd.tags = None;
+            }
+        } else {
+            eprint!(
+                "{} {}",
+                "Command with id:".red(),
+                id.to_string().yellow().bold(),
+            );
+            eprintln!("{}", " has no tags to remove.".red());
+            std::process::exit(1);
+        }
+
+        let toml_string =
+            toml::to_string(&shelf_data).context("Could not serialize data toml to string!")?;
+        fs::write(&get_data_path(), toml_string)
+            .context("Could not write updated data to file!")?;
+
+        println!(
+            "{} {} {} {} {}",
+            "Removed tag".green(),
+            tag.yellow().bold(),
+            "from command with id:".green(),
+            id.to_string().yellow().bold(),
+            "successfully".green()
+        );
+    } else {
+        eprintln!(
+            "{}{}",
+            "Could not find saved command with id: ".red(),
+            id.to_string().yellow().bold()
+        );
+        std::process::exit(1);
+    }
+
+    Ok(())
+}
+
+pub fn add_tag(id: &u32, tag: &String) -> Result<()> {
+    let mut shelf_data = get_shelf_data().context("Could not fetch shelf data")?;
+
+    if let Some(cmd) = shelf_data.commands.iter_mut().find(|cmd| cmd.id == *id) {
+        if let Some(tags) = &mut cmd.tags {
+            if tags.contains(tag) {
+                eprintln!(
+                    "{}{} {} {}",
+                    "Tag ".red(),
+                    tag.yellow().bold(),
+                    "already exists in command with id:".red(),
+                    id.to_string().yellow().bold()
+                );
+                std::process::exit(1);
+            }
+            tags.push(tag.clone());
+        } else {
+            cmd.tags = Some(vec![tag.clone()]);
+        }
+
+        let toml_string =
+            toml::to_string(&shelf_data).context("Could not serialize data toml to string!")?;
+        fs::write(&get_data_path(), toml_string)
+            .context("Could not write updated data to file!")?;
+
+        println!(
+            "{} {} {} {} {}",
+            "Added tag".green(),
+            tag.yellow().bold(),
+            "to command with id:".green(),
+            id.to_string().yellow().bold(),
+            "successfully".green()
+        );
+    } else {
+        eprintln!(
+            "{}{}",
+            "Could not find saved command with id: ".red(),
+            id.to_string().yellow().bold()
+        );
+        std::process::exit(1);
+    }
+
+    Ok(())
+}
+
+pub fn edit_description(id: &u32, new_description: &String) -> Result<()> {
+    let mut shelf_data = get_shelf_data().context("Could not fetch shelf data")?;
+
+    if let Some(cmd) = shelf_data.commands.iter_mut().find(|cmd| cmd.id == *id) {
+        let old_description = cmd.description.clone();
+        cmd.description = new_description.clone();
+
+        let toml_string =
+            toml::to_string(&shelf_data).context("Could not serialize data toml to string!")?;
+        fs::write(&get_data_path(), toml_string)
+            .context("Could not write updated data to file!")?;
+
+        println!(
+            "{} {} {} {}",
+            "Updated description for command with id:".green(),
+            id.to_string().yellow().bold(),
+            "successfully".green(),
+            format!("({} -> {})", old_description, new_description).bright_black()
+        );
+    } else {
+        eprintln!(
+            "{}{}",
+            "Could not find saved command with id: ".red(),
+            id.to_string().yellow().bold()
+        );
+        std::process::exit(1);
+    }
+
+    Ok(())
+}
+
+pub fn edit_command_string(id: &u32, new_command: &String) -> Result<()> {
+    let mut shelf_data = get_shelf_data().context("Could not fetch shelf data")?;
+
+    if let Some(cmd) = shelf_data.commands.iter_mut().find(|cmd| cmd.id == *id) {
+        let old_command = cmd.command.clone();
+        cmd.command = new_command.clone();
+
+        let toml_string =
+            toml::to_string(&shelf_data).context("Could not serialize data toml to string!")?;
+        fs::write(&get_data_path(), toml_string)
+            .context("Could not write updated data to file!")?;
+
+        println!(
+            "{} {} {} {}",
+            "Updated command with id:".green(),
+            id.to_string().yellow().bold(),
+            "successfully".green(),
+            format!("({} -> {})", old_command, new_command).bright_black()
+        );
+    } else {
+        eprintln!(
+            "{}{}",
+            "Could not find saved command with id: ".red(),
+            id.to_string().yellow().bold()
+        );
+        std::process::exit(1);
+    }
+
+    Ok(())
+}
