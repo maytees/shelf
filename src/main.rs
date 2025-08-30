@@ -62,8 +62,14 @@ enum Commands {
     },
     /// Run a command via an id
     Run {
+        /// Also copy the command to clipboard after running
         #[arg(short, long, required = false)]
         copy: bool,
+        id: u32,
+    },
+    /// Copy a command to clipboard by ID
+    #[command(alias = "c")]
+    Copy {
         id: u32,
     },
     /// Fuzzy search your commands
@@ -130,12 +136,16 @@ fn main() -> Result<()> {
             )?;
         }
         Some(Commands::Run { id, copy }) => {
+            let result = run_command(id);
+            
             if *copy {
-                return copy_command(id);
+                let _ = copy_command(id);
             }
-
-            // Run command
-            return run_command(id);
+            
+            return result;
+        }
+        Some(Commands::Copy { id }) => {
+            return copy_command(id);
         }
         Some(Commands::Fuzz { copy }) => return fuzzy_search(copy),
         Some(Commands::Delete { id }) => {

@@ -102,13 +102,20 @@ To run a command, first find the `id` of the command via `shelf list`
 shelf run <ID>
 ```
 
-#### Copying to clipboard
-
-Copying to clipboard may not seem all that useful right now, but it may come in handy someday,
-so it's there for you to use.. :)
+To run a command AND copy it to clipboard:
 
 ```bash
 shelf run -c <ID>
+```
+
+#### Copying to clipboard
+
+Copy a command to clipboard without running it:
+
+```bash
+shelf copy <ID>
+# or use the short alias
+shelf c <ID>
 ```
 
 ### Deleting commands
