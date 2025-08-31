@@ -374,6 +374,7 @@ pub fn delete_command(id: &u32) -> Result<()> {
         std::process::exit(1);
     }
 
+    ensure_data_dir_exists().context("Could not create data directory")?;
     let toml_string =
         toml::to_string(&shelf_data).context("Could not serialize data toml to string!")?;
     fs::write(&get_data_path(), toml_string).context("Could not write updated data to file!")?;
