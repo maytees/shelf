@@ -421,6 +421,7 @@ pub fn remove_tag(id: &u32, tag: &String) -> Result<()> {
             std::process::exit(1);
         }
 
+        ensure_data_dir_exists().context("Could not create data directory")?;
         let toml_string =
             toml::to_string(&shelf_data).context("Could not serialize data toml to string!")?;
         fs::write(&get_data_path(), toml_string)
@@ -466,6 +467,7 @@ pub fn add_tag(id: &u32, tag: &String) -> Result<()> {
             cmd.tags = Some(vec![tag.clone()]);
         }
 
+        ensure_data_dir_exists().context("Could not create data directory")?;
         let toml_string =
             toml::to_string(&shelf_data).context("Could not serialize data toml to string!")?;
         fs::write(&get_data_path(), toml_string)
@@ -498,6 +500,7 @@ pub fn edit_description(id: &u32, new_description: &String) -> Result<()> {
         let old_description = cmd.description.clone();
         cmd.description = new_description.clone();
 
+        ensure_data_dir_exists().context("Could not create data directory")?;
         let toml_string =
             toml::to_string(&shelf_data).context("Could not serialize data toml to string!")?;
         fs::write(&get_data_path(), toml_string)
@@ -529,6 +532,7 @@ pub fn edit_command_string(id: &u32, new_command: &String) -> Result<()> {
         let old_command = cmd.command.clone();
         cmd.command = new_command.clone();
 
+        ensure_data_dir_exists().context("Could not create data directory")?;
         let toml_string =
             toml::to_string(&shelf_data).context("Could not serialize data toml to string!")?;
         fs::write(&get_data_path(), toml_string)
