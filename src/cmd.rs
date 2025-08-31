@@ -10,7 +10,7 @@ use std::{
     process::Command,
 };
 
-use crate::{config::get_data_path, fuzzy::FuzzyPicker};
+use crate::{config::{ensure_data_dir_exists, get_data_path}, fuzzy::FuzzyPicker};
 extern crate colored; // not needed in Rust 2018+
 use colored::*;
 
@@ -180,6 +180,9 @@ pub fn save_command(
         tags,
         is_template,
     });
+
+    // Ensure data directory exists before writing
+    ensure_data_dir_exists().context("Could not create data directory")?;
 
     // Serialize data (save the command)
     let toml_string =

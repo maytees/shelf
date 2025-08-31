@@ -39,6 +39,14 @@ pub fn get_data_path() -> PathBuf {
     }
 }
 
+pub fn ensure_data_dir_exists() -> Result<()> {
+    let data_path = get_data_path();
+    if let Some(parent) = data_path.parent() {
+        fs::create_dir_all(parent).context("Could not create data directory")?;
+    }
+    Ok(())
+}
+
 pub fn load_config(config_dir: &PathBuf, config_path: &PathBuf) -> Result<Config> {
     // Create directories if they don't exist
     fs::create_dir_all(config_dir).context("Could not create `shelf` directory")?;
