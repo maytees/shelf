@@ -223,6 +223,40 @@ Automatically outputs verbose list of commands **(default: false)**
 auto_verbose = false
 ```
 
+## Environment Variables
+
+Shelf supports the following environment variables to customize file locations:
+
+### SHELF_DATA_DIR
+
+Override the default data directory where commands are stored:
+
+```bash
+export SHELF_DATA_DIR="/custom/path"
+# Commands will be stored in /custom/path/cmds.toml
+```
+
+### SHELF_CONFIG_DIR
+
+Override the default config directory:
+
+```bash
+export SHELF_CONFIG_DIR="/custom/config/path"
+# Config will be stored in /custom/config/path/config.toml
+```
+
+These are particularly useful for testing or when you want to use different shelf instances.
+
+## Testing
+
+Run the test suite with:
+
+```bash
+cargo test
+```
+
+The tests use temporary directories and environment variable isolation to avoid interfering with your personal shelf data.
+
 ## Todo
 
 - [x] Save

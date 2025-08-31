@@ -76,12 +76,12 @@ fn extract_parameters(command: &str) -> Vec<String> {
 
     for cap in re.captures_iter(command) {
         let start_pos = cap.get(0).unwrap().start();
-        
+
         // Check if this match is escaped (preceded by backslash)
         if start_pos > 0 && command.chars().nth(start_pos - 1) == Some('\\') {
             continue; // Skip escaped templates
         }
-        
+
         let param = cap[1].to_string();
         if seen.insert(param.clone()) {
             params.push(param);
@@ -135,7 +135,17 @@ fn get_shelf_data() -> Result<ShelfData, Error> {
     let path = get_data_path(); // Path of the cmds.toml
     if path.exists() {
         let content = fs::read_to_string(&path)?;
-        return Ok(toml::from_str(&content).context("Could not get toml data from string!")?);
+        let mut shelf_data: ShelfData =
+            toml::from_str(&content).context("Could not get toml data from string!")?;
+
+        // Migrate old commands that don't have is_template field
+        for command in &mut shelf_data.commands {
+            if command.is_template == false && !extract_parameters(&command.command).is_empty() {
+                command.is_template = true;
+            }
+        }
+
+        return Ok(shelf_data);
     }
 
     Ok(ShelfData { commands: vec![] })
@@ -537,4 +547,155 @@ pub fn edit_command_string(id: &u32, new_command: &String) -> Result<()> {
     }
 
     Ok(())
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use std::env;
+    use std::sync::Mutex;
+    use tempfile::TempDir;
+
+    static TEST_MUTEX: Mutex<()> = Mutex::new(());
+
+    struct TestGuard {
+        _temp_dir: TempDir,
+        _lock: std::sync::MutexGuard<'static, ()>,
+    }
+
+    fn setup_test_env() -> TestGuard {
+        let lock = TEST_MUTEX.lock().unwrap();
+        let temp_dir = TempDir::new().unwrap();
+
+        // Set environment variables to point to temp directory
+        env::set_var("SHELF_DATA_DIR", temp_dir.path().to_str().unwrap());
+        env::set_var("SHELF_CONFIG_DIR", temp_dir.path().to_str().unwrap());
+
+        TestGuard {
+            _temp_dir: temp_dir,
+            _lock: lock,
+        }
+    }
+
+    impl Drop for TestGuard {
+        fn drop(&mut self) {
+            env::remove_var("SHELF_DATA_DIR");
+            env::remove_var("SHELF_CONFIG_DIR");
+        }
+    }
+
+    #[test]
+    fn test_save_and_list_command() {
+        let _guard = setup_test_env();
+
+        let result = save_command(
+            "echo hello".to_string(),
+            Some("Test command".to_string()),
+            Some(vec!["test".to_string()]),
+        );
+        assert!(result.is_ok());
+
+        let shelf_data = get_shelf_data().unwrap();
+        assert_eq!(shelf_data.commands.len(), 1);
+        assert_eq!(shelf_data.commands[0].command, "echo hello");
+        assert_eq!(shelf_data.commands[0].description, "Test command");
+        assert_eq!(shelf_data.commands[0].tags, Some(vec!["test".to_string()]));
+    }
+
+    #[test]
+    fn test_template_detection() {
+        let _guard = setup_test_env();
+
+        save_command(
+            "ssh {{user}}@{{host}}".to_string(),
+            Some("SSH template".to_string()),
+            None,
+        )
+        .unwrap();
+
+        let shelf_data = get_shelf_data().unwrap();
+        assert_eq!(shelf_data.commands.len(), 1);
+        assert!(shelf_data.commands[0].is_template);
+
+        let params = extract_parameters(&shelf_data.commands[0].command);
+        assert_eq!(params, vec!["user", "host"]);
+    }
+
+    #[test]
+    fn test_escaped_template() {
+        let _guard = setup_test_env();
+
+        save_command(
+            "echo \\{{literal}}".to_string(),
+            Some("Escaped template".to_string()),
+            None,
+        )
+        .unwrap();
+
+        let shelf_data = get_shelf_data().unwrap();
+        assert_eq!(shelf_data.commands.len(), 1);
+        assert!(!shelf_data.commands[0].is_template);
+
+        let params = extract_parameters(&shelf_data.commands[0].command);
+        assert!(params.is_empty());
+    }
+
+    #[test]
+    fn test_add_and_remove_tag() {
+        let _guard = setup_test_env();
+
+        save_command(
+            "echo test".to_string(),
+            Some("Test".to_string()),
+            Some(vec!["initial".to_string()]),
+        )
+        .unwrap();
+
+        let shelf_data = get_shelf_data().unwrap();
+        let id = shelf_data.commands[0].id;
+
+        add_tag(&id, &"newtag".to_string()).unwrap();
+        let shelf_data = get_shelf_data().unwrap();
+        let tags = shelf_data.commands[0].tags.as_ref().unwrap();
+        assert!(tags.contains(&"newtag".to_string()));
+        assert!(tags.contains(&"initial".to_string()));
+
+        remove_tag(&id, &"initial".to_string()).unwrap();
+        let shelf_data = get_shelf_data().unwrap();
+        let tags = shelf_data.commands[0].tags.as_ref().unwrap();
+        assert!(tags.contains(&"newtag".to_string()));
+        assert!(!tags.contains(&"initial".to_string()));
+    }
+
+    #[test]
+    fn test_edit_description_and_command() {
+        let _guard = setup_test_env();
+
+        save_command("echo old".to_string(), Some("Old desc".to_string()), None).unwrap();
+
+        let shelf_data = get_shelf_data().unwrap();
+        let id = shelf_data.commands[0].id;
+
+        edit_description(&id, &"New desc".to_string()).unwrap();
+        let shelf_data = get_shelf_data().unwrap();
+        assert_eq!(shelf_data.commands[0].description, "New desc");
+
+        edit_command_string(&id, &"echo new".to_string()).unwrap();
+        let shelf_data = get_shelf_data().unwrap();
+        assert_eq!(shelf_data.commands[0].command, "echo new");
+    }
+
+    #[test]
+    fn test_delete_command() {
+        let _guard = setup_test_env();
+
+        save_command("echo test".to_string(), None, None).unwrap();
+        let shelf_data = get_shelf_data().unwrap();
+        assert_eq!(shelf_data.commands.len(), 1);
+        let id = shelf_data.commands[0].id;
+
+        delete_command(&id).unwrap();
+        let shelf_data = get_shelf_data().unwrap();
+        assert_eq!(shelf_data.commands.len(), 0);
+    }
 }

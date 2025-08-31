@@ -34,7 +34,7 @@ enum Commands {
     /// your config folder.
     Config,
     /// Save a command. Supports templates with {{parameter}} syntax.
-    /// 
+    ///
     /// Examples:
     ///   shelf stack echo "hello world"
     ///   shelf stack -d "SSH to server" ssh {{user}}@{{host}}
@@ -75,9 +75,7 @@ enum Commands {
     },
     /// Copy a command to clipboard by ID
     #[command(alias = "c")]
-    Copy {
-        id: u32,
-    },
+    Copy { id: u32 },
     /// Fuzzy search your commands
     #[command(alias = "fuzzy")]
     Fuzz {
@@ -143,11 +141,11 @@ fn main() -> Result<()> {
         }
         Some(Commands::Run { id, copy }) => {
             let result = run_command(id);
-            
+
             if *copy {
                 let _ = copy_command(id);
             }
-            
+
             return result;
         }
         Some(Commands::Copy { id }) => {

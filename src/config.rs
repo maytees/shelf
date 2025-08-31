@@ -20,7 +20,11 @@ impl Default for Config {
 }
 
 pub fn get_config_dir() -> PathBuf {
-    config_dir().unwrap_or_default().join("shelf")
+    if let Ok(custom_dir) = std::env::var("SHELF_CONFIG_DIR") {
+        PathBuf::from(custom_dir)
+    } else {
+        config_dir().unwrap_or_default().join("shelf")
+    }
 }
 
 pub fn get_config_path(config_dir: &PathBuf) -> PathBuf {
@@ -28,7 +32,11 @@ pub fn get_config_path(config_dir: &PathBuf) -> PathBuf {
 }
 
 pub fn get_data_path() -> PathBuf {
-    data_dir().unwrap_or_default().join("shelf/cmds.toml")
+    if let Ok(custom_dir) = std::env::var("SHELF_DATA_DIR") {
+        PathBuf::from(custom_dir).join("cmds.toml")
+    } else {
+        data_dir().unwrap_or_default().join("shelf/cmds.toml")
+    }
 }
 
 pub fn load_config(config_dir: &PathBuf, config_path: &PathBuf) -> Result<Config> {
