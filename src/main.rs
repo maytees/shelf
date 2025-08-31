@@ -39,6 +39,7 @@ enum Commands {
     ///   shelf stack echo "hello world"
     ///   shelf stack -d "SSH to server" ssh {{user}}@{{host}}
     ///   shelf stack -t docker,run docker run -it {{image}} {{command}}
+    ///   shelf stack 'echo \{{literal}}' # Saves literal {{literal}}
     #[command(alias = "save")]
     Stack {
         /// Description of the command (optional)

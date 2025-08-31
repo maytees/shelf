@@ -95,6 +95,7 @@ shelf run 5
 - **Unique parameters**: Same parameter name used multiple times gets same value
 - **Works everywhere**: Templates work with `run`, `copy`, and fuzzy search
 - **No conflicts**: Regular `{braces}`, `$variables`, and `<redirections>` work normally
+- **Literal braces**: Use `\{{text}}` to save literal `{{text}}` without templating
 
 ### Listing commands
 

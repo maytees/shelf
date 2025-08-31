@@ -75,6 +75,13 @@ fn extract_parameters(command: &str) -> Vec<String> {
     let mut seen = std::collections::HashSet::new();
 
     for cap in re.captures_iter(command) {
+        let start_pos = cap.get(0).unwrap().start();
+        
+        // Check if this match is escaped (preceded by backslash)
+        if start_pos > 0 && command.chars().nth(start_pos - 1) == Some('\\') {
+            continue; // Skip escaped templates
+        }
+        
         let param = cap[1].to_string();
         if seen.insert(param.clone()) {
             params.push(param);
@@ -117,6 +124,9 @@ fn interpolate_command(
         let pattern = format!("{{{{{}}}}}", param);
         result = result.replace(&pattern, value);
     }
+
+    // Remove backslashes that were used to escape template syntax
+    result = result.replace("\\{{", "{{");
 
     result
 }
