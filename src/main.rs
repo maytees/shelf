@@ -33,7 +33,12 @@ enum Commands {
     /// Display config information/paths. In case you need to find
     /// your config folder.
     Config,
-    /// Save a command
+    /// Save a command. Supports templates with {{parameter}} syntax.
+    /// 
+    /// Examples:
+    ///   shelf stack echo "hello world"
+    ///   shelf stack -d "SSH to server" ssh {{user}}@{{host}}
+    ///   shelf stack -t docker,run docker run -it {{image}} {{command}}
     #[command(alias = "save")]
     Stack {
         /// Description of the command (optional)
@@ -44,7 +49,7 @@ enum Commands {
         #[arg(short, long, allow_hyphen_values = true)]
         tags: Option<String>,
 
-        /// The command to save
+        /// The command to save. Use {{param}} for template parameters.
         #[arg(required = true, allow_hyphen_values = true, trailing_var_arg = true)]
         command: Vec<String>,
     },

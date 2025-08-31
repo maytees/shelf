@@ -1,8 +1,14 @@
 use anyhow::{Context, Error, Result};
 use copypasta::{ClipboardContext, ClipboardProvider};
+use regex::Regex;
 use serde::{Deserialize, Serialize};
 use shellexpand;
-use std::{fmt::Display, fs, process::Command};
+use std::{
+    fmt::Display,
+    fs,
+    io::{self, Write},
+    process::Command,
+};
 
 use crate::{config::get_data_path, fuzzy::FuzzyPicker};
 extern crate colored; // not needed in Rust 2018+
@@ -17,6 +23,13 @@ pub struct SavedCommand {
     pub description: String,
 
     pub tags: Option<Vec<String>>,
+
+    #[serde(default = "default_is_template")]
+    pub is_template: bool,
+}
+
+fn default_is_template() -> bool {
+    false
 }
 
 fn default_description() -> String {
@@ -56,6 +69,58 @@ fn get_next_id(commands: &Vec<SavedCommand>) -> u32 {
     commands.iter().map(|cmd| cmd.id).max().unwrap_or(0) + 1
 }
 
+fn extract_parameters(command: &str) -> Vec<String> {
+    let re = Regex::new(r"\{\{(\w+)\}\}").unwrap();
+    let mut params = Vec::new();
+    let mut seen = std::collections::HashSet::new();
+
+    for cap in re.captures_iter(command) {
+        let param = cap[1].to_string();
+        if seen.insert(param.clone()) {
+            params.push(param);
+        }
+    }
+
+    params
+}
+
+fn prompt_for_parameters(
+    parameters: &[String],
+) -> Result<std::collections::HashMap<String, String>> {
+    let mut values = std::collections::HashMap::new();
+
+    for param in parameters {
+        print!("Enter {}: ", param.yellow().bold());
+        io::stdout().flush()?;
+
+        let mut input = String::new();
+        io::stdin().read_line(&mut input)?;
+        let value = input.trim().to_string();
+
+        // if value.is_empty() {
+        //     return Err(anyhow::anyhow!("Parameter '{}' cannot be empty", param));
+        // }
+
+        values.insert(param.clone(), value);
+    }
+
+    Ok(values)
+}
+
+fn interpolate_command(
+    command: &str,
+    values: &std::collections::HashMap<String, String>,
+) -> String {
+    let mut result = command.to_string();
+
+    for (param, value) in values {
+        let pattern = format!("{{{{{}}}}}", param);
+        result = result.replace(&pattern, value);
+    }
+
+    result
+}
+
 fn get_shelf_data() -> Result<ShelfData, Error> {
     let path = get_data_path(); // Path of the cmds.toml
     if path.exists() {
@@ -74,6 +139,17 @@ pub fn save_command(
     // Get file
     let mut shelf_data = get_shelf_data().context("Could not fetch shelf data")?;
 
+    let parameters = extract_parameters(&command);
+    let is_template = !parameters.is_empty();
+
+    if is_template {
+        println!(
+            "{} {}",
+            "Template detected with parameters:".yellow(),
+            parameters.join(", ").cyan().bold()
+        );
+    }
+
     shelf_data.commands.push(SavedCommand {
         id: get_next_id(&shelf_data.commands),
         command: command.clone(),
@@ -82,6 +158,7 @@ pub fn save_command(
             None => default_description(),
         },
         tags,
+        is_template,
     });
 
     // Serialize data (save the command)
@@ -183,8 +260,24 @@ pub fn copy_command(id: &u32) -> Result<()> {
 }
 
 fn exec_command(command: SavedCommand) -> Result<()> {
+    let final_command = if command.is_template {
+        let parameters = extract_parameters(&command.command);
+        if !parameters.is_empty() {
+            println!(
+                "{}",
+                "This is a template command. Please provide values:".yellow()
+            );
+            let values = prompt_for_parameters(&parameters)?;
+            interpolate_command(&command.command, &values)
+        } else {
+            command.command.clone()
+        }
+    } else {
+        command.command.clone()
+    };
+
     // First expand any environment variables in the command
-    let expanded_command = shellexpand::full(&command.command)
+    let expanded_command = shellexpand::full(&final_command)
         .map_err(|e| anyhow::anyhow!("Failed to expand environment variables: {}", e))?;
 
     // Split the expanded command string into parts
@@ -197,11 +290,11 @@ fn exec_command(command: SavedCommand) -> Result<()> {
         return Err(anyhow::anyhow!("Empty command after expansion"));
     }
 
-    let command = &args[0];
+    let command_name = &args[0];
     let params = &args[1..];
 
     // Execute the command
-    match Command::new(command).args(params).status() {
+    match Command::new(command_name).args(params).status() {
         Ok(status) => {
             if !status.success() {
                 eprintln!("Command failed with status: {}", status);

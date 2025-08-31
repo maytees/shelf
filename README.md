@@ -60,6 +60,42 @@ To stack a command with tags, specifiy with the -t flag.
 shelf stack -d "Builds a NextJS Project" -t nextjs,npx,npm npx next build
 ```
 
+### Command Templates
+
+Shelf supports command templates using `{{parameter}}` syntax. When you save a command with double curly brace parameters, it becomes a template that will prompt for values when run.
+
+#### Saving templates
+
+```bash
+# SSH template
+shelf stack -d "SSH to any server" ssh {{user}}@{{host}}
+
+# Docker template
+shelf stack -d "Run container interactively" docker run -it {{image}} {{command}}
+
+# Git clone with branch
+shelf stack -d "Clone specific branch" git clone -b {{branch}} {{repo}}
+```
+
+#### Running templates
+
+When you run a template command, Shelf will prompt for each parameter:
+
+```bash
+shelf run 5
+# This is a template command. Please provide values:
+# Enter user: admin
+# Enter host: myserver.com
+# Executes: ssh admin@myserver.com
+```
+
+#### Template features
+
+- **Automatic detection**: Any command with `{{param}}` becomes a template
+- **Unique parameters**: Same parameter name used multiple times gets same value
+- **Works everywhere**: Templates work with `run`, `copy`, and fuzzy search
+- **No conflicts**: Regular `{braces}`, `$variables`, and `<redirections>` work normally
+
 ### Listing commands
 
 By default, this will act similar to shell history, and print out saved commands in order.
