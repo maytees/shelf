@@ -3,12 +3,14 @@ mod config;
 mod fuzzy;
 
 use anyhow::{Context, Result};
-use clap::{Parser, Subcommand};
+use clap::{CommandFactory, Parser, Subcommand};
+use clap_complete::{generate, Generator, Shell};
 use cmd::{
     add_tag, copy_command, delete_command, edit_command_string, edit_description, fuzzy_search,
     list_commands, remove_tag, run_command, save_command,
 };
 use config::{get_config_dir, get_config_path, load_config};
+use std::io;
 
 #[derive(Parser)]
 #[command(
@@ -100,6 +102,14 @@ enum Commands {
         #[arg(required = true, allow_hyphen_values = true, trailing_var_arg = true)]
         command: Vec<String>,
     },
+    Completion {
+        #[arg(value_enum)]
+        shell: Shell,
+    },
+}
+
+fn print_completions<G: Generator>(gen: G, cmd: &mut clap::Command) {
+    generate(gen, cmd, "shelf".to_string(), &mut io::stdout());
 }
 
 fn main() -> Result<()> {
@@ -166,6 +176,10 @@ fn main() -> Result<()> {
         }
         Some(Commands::EditCommand { id, command }) => {
             edit_command_string(id, &command.join(" "))?;
+        }
+        Some(Commands::Completion { shell }) => {
+            let mut cmd = ShelfCli::command();
+            print_completions(*shell, &mut cmd);
         }
         None => {}
     }

@@ -247,6 +247,50 @@ export SHELF_CONFIG_DIR="/custom/config/path"
 
 These are particularly useful for testing or when you want to use different shelf instances.
 
+## Shell Completion
+
+Shelf supports shell completion for bash, zsh, fish, and PowerShell.
+
+### Generate completion scripts
+
+```bash
+# For bash
+shelf completion bash > ~/.local/share/bash-completion/completions/shelf
+
+# For zsh  
+shelf completion zsh > ~/.zsh/completions/_shelf
+
+# For fish
+shelf completion fish > ~/.config/fish/completions/shelf.fish
+
+# For PowerShell
+shelf completion powershell > shelf.ps1
+```
+
+### Setup instructions
+
+**Bash:**
+```bash
+# Add to ~/.bashrc
+source ~/.local/share/bash-completion/completions/shelf
+```
+
+**Zsh:**
+```bash
+# Add to ~/.zshrc
+fpath=(~/.zsh/completions $fpath)
+autoload -U compinit && compinit
+```
+
+**Fish:**
+Fish will automatically load completions from `~/.config/fish/completions/`
+
+**PowerShell:**
+```powershell
+# Add to your PowerShell profile
+. ./shelf.ps1
+```
+
 ## Testing
 
 Run the test suite with:
