@@ -10,7 +10,10 @@ use std::{
     process::Command,
 };
 
-use crate::{config::{ensure_data_dir_exists, get_data_path}, fuzzy::FuzzyPicker};
+use crate::{
+    config::{ensure_data_dir_exists, get_data_path},
+    fuzzy::FuzzyPicker,
+};
 extern crate colored; // not needed in Rust 2018+
 use colored::*;
 
