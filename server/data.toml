@@ -1,0 +1,28 @@
+
+[[commands]]
+id = 1
+command = "echo hi"
+description = "No description."
+is_template = false
+timestamp = "2025-09-01T22:35:10.281Z"
+
+[[commands]]
+id = 2
+command = "ncu -u"
+description = "Update all dependecies"
+is_template = false
+timestamp = "2025-09-01T22:35:10.282Z"
+
+[[commands]]
+id = 4
+command = "{{url}}@{{user}}"
+description = "SSSH to server"
+is_template = true
+timestamp = "2025-09-01T22:35:10.283Z"
+
+[[commands]]
+id = 5
+command = "{{url}}@{{user}}"
+description = "SSSH to server"
+is_template = true
+timestamp = "2025-09-01T22:35:10.284Z"
